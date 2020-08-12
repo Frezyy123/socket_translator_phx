@@ -10,7 +10,7 @@ defmodule SocketTranslatorPhx.Translator do
       %{
         folder_id: "b1g75qo3ke15tavldsvv",
         texts: message,
-        targetLanguageCode: "ru"
+        targetLanguageCode: "en"
       }
       |> Jason.encode!()
 

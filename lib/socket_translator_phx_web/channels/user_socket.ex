@@ -4,6 +4,8 @@ defmodule SocketTranslatorPhxWeb.UserSocket do
   ## Channels
   # channel "room:*", SocketTranslatorPhxWeb.RoomChannel
 
+  channel "translator", SocketTranslatorPhxWeb.TranslateChannel
+
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
   # verification, you can put default assigns into
