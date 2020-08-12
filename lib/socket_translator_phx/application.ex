@@ -14,7 +14,8 @@ defmodule SocketTranslatorPhx.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: SocketTranslatorPhx.PubSub},
       # Start the Endpoint (http/https)
-      SocketTranslatorPhxWeb.Endpoint
+      SocketTranslatorPhxWeb.Endpoint,
+      SocketTranslatorPhx.CacheWorker
       # Start a worker by calling: SocketTranslatorPhx.Worker.start_link(arg)
       # {SocketTranslatorPhx.Worker, arg}
     ]

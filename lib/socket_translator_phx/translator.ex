@@ -24,7 +24,7 @@ defmodule SocketTranslatorPhx.Translator do
     end
   end
 
-
+  @spec parse_response(HTTPoison.Response.t()) :: String.t()
   defp parse_response(%HTTPoison.Response{body: body}) do
     result = Jason.decode!(body)
 
@@ -34,11 +34,13 @@ defmodule SocketTranslatorPhx.Translator do
     |> String.trim()
   end
 
+  @spec parse_error(HTTPoison.Error.t() | HTTPoison.Response.t()) :: {:error, atom()}
   defp parse_error(%HTTPoison.Error{reason: reason}), do: {:error, reason}
 
   defp parse_error(%HTTPoison.Response{status_code: 400}), do: {:error, :bad_request}
 
   defp parse_error(%HTTPoison.Response{status_code: 500}), do: {:error, :internal_server_error}
 
+  @spec get_api_url() :: String.t()
   defp get_api_url(), do: Application.get_env(:socket_translator_phx, __MODULE__)[:api_url]
 end

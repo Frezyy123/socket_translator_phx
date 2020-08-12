@@ -23,3 +23,6 @@ config :logger, level: :warn
 
 config :socket_translator_phx, SocketTranslatorPhx.Translator,
   api_url: "localhost:5000/translate/v2/translate"
+
+config :socket_translator_phx, SocketTranslatorPhx.CacheWorker,
+  time_to_live: 3

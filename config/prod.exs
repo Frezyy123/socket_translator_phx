@@ -56,4 +56,6 @@ config :logger, level: :info
 config :socket_translator_phx, SocketTranslatorPhx.Translator,
   api_url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
 
+config :socket_translator_phx, SocketTranslatorPhx.CacheWorker,
+  time_to_live: 3
 import_config "prod.secret.exs"
