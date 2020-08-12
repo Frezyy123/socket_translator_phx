@@ -11,7 +11,7 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
       run_translate_task(socket)
       {:noreply, socket}
     else
-      {:reply, {:error, "Too long message"}, socket}
+      {:reply, {:ok, %{"error" => "Error! Too long message"}}, socket}
     end
   end
 

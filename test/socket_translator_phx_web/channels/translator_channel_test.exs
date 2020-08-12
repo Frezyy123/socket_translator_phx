@@ -1,6 +1,6 @@
 defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
   use ExUnit.Case
-  use Phoenix.ChannelTest
+  import Phoenix.ChannelTest
   alias SocketTranslatorPhxWeb.Channels.TranslatorChannel
   @endpoint SocketTranslatorPhxWeb.Endpoint
 
@@ -23,9 +23,17 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
         Plug.Conn.resp(conn, 200, response)
       end)
 
-      ref = push(socket, "translate", %{"message" => "Привет"})
+      push(socket, "translate", %{"message" => "Привет"})
 
       assert_broadcast(ref, %{message: "Hi"}, 500)
+    end
+
+    test "Fail case", %{socket: socket} do
+
+      long_message = :crypto.strong_rand_bytes(281) |> Base.encode16()
+      ref = push(socket, "translate", %{"message" => long_message})
+
+      assert_reply(ref, :ok, %{"error" => "Error! Too long message"})
     end
   end
 end
