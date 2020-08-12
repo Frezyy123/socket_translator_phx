@@ -20,3 +20,6 @@ config :socket_translator_phx, SocketTranslatorPhxWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :socket_translator_phx, SocketTranslatorPhx.Translator,
+  api_url: "localhost:5000/translate/v2/translate"

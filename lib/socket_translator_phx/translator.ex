@@ -1,5 +1,4 @@
-defmodule SocketTranslator.Translator do
-  @api_url "https://translate.api.cloud.yandex.net/translate/v2/translate"
+defmodule SocketTranslatorPhx.Translator do
 
   @spec translate_message(String.t(), String.t()) :: {:ok, String.t()} | {:error, atom()}
   def translate_message(message, _token \\ "") do
@@ -15,8 +14,12 @@ defmodule SocketTranslator.Translator do
       }
       |> Jason.encode!()
 
-    case HTTPoison.post(@api_url, body, headers) do
+    api_url = get_api_url()
+
+    case HTTPoison.post(api_url, body, headers) do
       {:ok, %HTTPoison.Response{status_code: 200} = response} -> parse_response(response)
+      {:ok, %HTTPoison.Response{status_code: 400} = response} -> parse_error(response)
+      {:ok, %HTTPoison.Response{status_code: 500} = response} -> parse_error(response)
       {:error, %HTTPoison.Error{} = error} -> parse_error(error)
     end
   end
@@ -32,4 +35,10 @@ defmodule SocketTranslator.Translator do
   end
 
   defp parse_error(%HTTPoison.Error{reason: reason}), do: {:error, reason}
+
+  defp parse_error(%HTTPoison.Response{status_code: 400}), do: {:error, :bad_request}
+
+  defp parse_error(%HTTPoison.Response{status_code: 500}), do: {:error, :internal_server_error}
+
+  defp get_api_url(), do: Application.get_env(:socket_translator_phx, __MODULE__)[:api_url]
 end
