@@ -10,7 +10,6 @@ defmodule SocketTranslatorPhx.YandexTranslatorTest do
       Ecto.Adapters.SQL.Sandbox.mode(Repo, {:shared, self()})
 
       bypass = Bypass.open(port: 5000)
-
       {:ok, %{bypass: bypass}}
     end
 

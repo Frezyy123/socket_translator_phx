@@ -32,6 +32,11 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
     {:noreply, state}
   end
 
+  def handle_info(:clear_cache, %__MODULE__{ets_ref: ets_ref} = state) do
+    :ets.delete_all_objects(ets_ref)
+    {:noreply, state}
+  end
+
   def handle_call({:get_from_cache, original_message}, _from, %__MODULE__{ets_ref: ets_ref} = state) do
     translated_message =
       case :ets.lookup(ets_ref, original_message) do
@@ -52,6 +57,11 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
   @spec put_message_to_cache(String.t(), String.t()) :: :ok
   def put_message_to_cache(translated_message, original_message) do
     send(__MODULE__, {:put_to_cache, original_message, translated_message})
+  end
+
+  @spec clear_cache() :: :ok
+  def clear_cache() do
+    send(__MODULE__, :clear_cache)
   end
 
   @spec get_timestamp_of_expiration(non_neg_integer()) :: pos_integer()

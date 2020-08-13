@@ -3,6 +3,8 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
   import Phoenix.ChannelTest
   alias SocketTranslatorPhxWeb.Channels.TranslatorChannel
   alias SocketTranslatorPhx.Repo
+  alias SocketTranslatorPhx.Workers.CacheWorker
+  alias SocketTranslatorPhx.TranslationHistories.TranslationHistory
 
   @endpoint SocketTranslatorPhxWeb.Endpoint
 
@@ -17,20 +19,22 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
         |> subscribe_and_join(TranslatorChannel, "translator")
 
       bypass = Bypass.open(port: 5000)
+      on_exit(fn -> CacheWorker.clear_cache() end)
 
       {:ok, %{socket: socket, bypass: bypass}}
     end
 
     test "Success case", %{socket: socket, bypass: bypass} do
       Bypass.expect_once(bypass, "POST", "/translate/v2/translate", fn conn ->
-        response = %{translations: [%{text: "Hi"}]} |> Jason.encode!()
+        response = %{translations: [%{text: "World"}]} |> Jason.encode!()
 
         Plug.Conn.resp(conn, 200, response)
       end)
 
-      push(socket, "translate", %{"message" => "Привет"})
+      push(socket, "translate", %{"message" => "Мир"})
 
-      assert_broadcast(ref, %{eng_message: "Hi"}, 500)
+      assert_broadcast(ref, %{eng_message: "World"}, 500)
+      refute nil == Repo.get_by(TranslationHistory, original_message: "World")
     end
 
     test "Fail case", %{socket: socket} do
@@ -38,6 +42,7 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
       ref = push(socket, "translate", %{"message" => long_message})
 
       assert_reply(ref, :ok, %{"error" => "Error! Too long message"})
+      assert nil == Repo.get_by(TranslationHistory, original_message: "World")
     end
   end
 end

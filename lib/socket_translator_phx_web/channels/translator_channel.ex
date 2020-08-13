@@ -25,7 +25,6 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
 
   defp run_translate_task(message, socket) do
     Task.async(fn ->
-        # TODO Вынести из функции бд
         case YandexTranslator.translate_message(message) do
           {:error, reason} ->
             Logger.error("Error occured due async task in translator channel, reason: #{inspect(reason)}")
@@ -35,7 +34,7 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
             TranslationHistories.save_message_history(translated_message, message)
             CacheWorker.put_message_to_cache(translated_message, message)
 
-            translated_message
+            broadcast!(socket, "translator", %{eng_message: translated_message})
         end
     end)
   end

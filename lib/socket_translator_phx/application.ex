@@ -7,9 +7,8 @@ defmodule SocketTranslatorPhx.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
       SocketTranslatorPhx.Repo,
-      # Start the Endpoint (http/https)
+      {Phoenix.PubSub, name: SocketTranslatorPhx.PubSub},
       SocketTranslatorPhxWeb.Endpoint,
       SocketTranslatorPhx.Workers.CacheWorker,
       SocketTranslatorPhx.Workers.TokenWorker
