@@ -34,6 +34,9 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
       push(socket, "translate", %{"message" => "Мир"})
 
       assert_broadcast(ref, %{eng_message: "World"}, 500)
+      # Асинхронность требует жертв :C
+      # Не успевает записать в БД при тесте
+      :timer.sleep(100)
       refute nil == Repo.get_by(TranslationHistory, original_message: "World")
     end
 
@@ -42,6 +45,7 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
       ref = push(socket, "translate", %{"message" => long_message})
 
       assert_reply(ref, :ok, %{"error" => "Error! Too long message"})
+      :timer.sleep(100)
       assert nil == Repo.get_by(TranslationHistory, original_message: "World")
     end
   end

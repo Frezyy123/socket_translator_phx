@@ -3,6 +3,7 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
   alias SocketTranslatorPhx.YandexTranslator
   alias SocketTranslatorPhx.TranslationHistories
   alias SocketTranslatorPhx.Workers.CacheWorker
+  alias SocketTranslatorPhx.TranslateTasks
   require Logger
 
   def join("translator", _message, socket) do
@@ -19,23 +20,38 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
     end
   end
 
-  def handle_info(_, socket) do
+  def handle_info({ref, {:ok, translated_message, message}}, socket) when is_binary(translated_message) do
+    TranslationHistories.save_message_history(translated_message, message)
+    CacheWorker.put_message_to_cache(translated_message, message)
+    {:noreply, socket}
+  end
+
+  def handle_info({ref, {:error, reason}}, socket) do
+    Logger.error("Error occured due async task in translator channel, reason: #{inspect(reason)}")
+    {:noreply, socket}
+  end
+
+  def handle_info({:DOWN, _ref, :process, _pid, :normal}, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info({:DOWN, _ref, :process, _pid, reason}, socket) do
+    Logger.error("Raise exeption occured due task, reason: #{inspect(reason)}")
     {:noreply, socket}
   end
 
   defp run_translate_task(message, socket) do
-    Task.async(fn ->
-        case YandexTranslator.translate_message(message) do
-          {:error, reason} ->
-            Logger.error("Error occured due async task in translator channel, reason: #{inspect(reason)}")
-            broadcast!(socket, "translate", %{error: "Error! Please try again, later"})
+    Task.Supervisor.async_nolink(TranslateTasks, fn ->
+      case YandexTranslator.translate_message(message) do
+        {:error, reason} ->
+          broadcast!(socket, "translate", %{error: "Error! Please try again, later"})
 
-          translated_message ->
-            TranslationHistories.save_message_history(translated_message, message)
-            CacheWorker.put_message_to_cache(translated_message, message)
+          {:error, reason}
 
-            broadcast!(socket, "translate", %{eng_message: translated_message})
-        end
+        translated_message ->
+          broadcast!(socket, "translate", %{eng_message: translated_message})
+          {:ok, translated_message, message}
+      end
     end)
   end
 end

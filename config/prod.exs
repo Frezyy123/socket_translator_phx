@@ -53,9 +53,7 @@ config :logger, level: :info
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 
-config :socket_translator_phx, SocketTranslatorPhx.YandexTranslator,
-  api_url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
+config :socket_translator_phx, SocketTranslatorPhx.YandexTranslator, api_url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
 
-config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker,
-  time_to_live: 3
+config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker, time_to_live: 3
 import_config "prod.secret.exs"

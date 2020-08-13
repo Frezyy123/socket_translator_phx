@@ -26,7 +26,7 @@ defmodule SocketTranslatorPhx.TranslationHistories do
     Repo.get!(TranslationHistory, translation_history_id)
   end
 
-  @spec get_translation_history(pos_integer()) :: TranslationHistory.t() |  nil
+  @spec get_translation_history(pos_integer()) :: TranslationHistory.t() | nil
   def get_translation_history(translation_history_id) do
     Repo.get(TranslationHistory, translation_history_id)
   end
