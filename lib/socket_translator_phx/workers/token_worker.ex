@@ -35,5 +35,4 @@ defmodule SocketTranslatorPhx.Workers.TokenWorker do
     token
     |> String.trim()
   end
-
 end

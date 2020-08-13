@@ -25,7 +25,6 @@ defmodule SocketTranslatorPhx.YandexTranslatorTest do
 
     test "Fail case, should return {:error, reason}", %{bypass: bypass} do
       Bypass.expect_once(bypass, "POST", "/translate/v2/translate", fn conn ->
-
         Plug.Conn.resp(conn, 500, "")
       end)
 

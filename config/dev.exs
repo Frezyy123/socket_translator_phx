@@ -75,9 +75,6 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
+config :socket_translator_phx, SocketTranslatorPhx.YandexTranslator, api_url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
 
-config :socket_translator_phx, SocketTranslatorPhx.YandexTranslator,
-  api_url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
-
-config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker,
-  time_to_live: 3
+config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker, time_to_live: 3

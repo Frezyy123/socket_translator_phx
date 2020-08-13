@@ -11,7 +11,8 @@ defmodule SocketTranslatorPhx.Application do
       {Phoenix.PubSub, name: SocketTranslatorPhx.PubSub},
       SocketTranslatorPhxWeb.Endpoint,
       SocketTranslatorPhx.Workers.CacheWorker,
-      SocketTranslatorPhx.Workers.TokenWorker
+      SocketTranslatorPhx.Workers.TokenWorker,
+      {Task.Supervisor, name: SocketTranslatorPhx.TranslateTasks}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

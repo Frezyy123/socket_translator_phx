@@ -42,8 +42,9 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
       case :ets.lookup(ets_ref, original_message) do
         [] ->
           nil
+
         [{_original_message, translated_message, _timestamp}] ->
-           translated_message
+          translated_message
       end
 
     {:reply, translated_message, state}
