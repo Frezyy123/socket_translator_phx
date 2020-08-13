@@ -2,14 +2,19 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
   use ExUnit.Case
   import Phoenix.ChannelTest
   alias SocketTranslatorPhxWeb.Channels.TranslatorChannel
+  alias SocketTranslatorPhx.Repo
+
   @endpoint SocketTranslatorPhxWeb.Endpoint
 
   describe "WebSocket channels" do
     setup do
-    {:ok, _, socket} =
-      SocketTranslatorPhxWeb.UserSocket
-      |> socket("user_id", %{some: :assign})
-      |> subscribe_and_join(TranslatorChannel, "translator")
+      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
+      Ecto.Adapters.SQL.Sandbox.mode(Repo, {:shared, self()})
+
+      {:ok, _, socket} =
+        SocketTranslatorPhxWeb.UserSocket
+        |> socket("user_id", %{some: :assign})
+        |> subscribe_and_join(TranslatorChannel, "translator")
 
       bypass = Bypass.open(port: 5000)
 
@@ -25,11 +30,10 @@ defmodule SocketTranslatorPhxWeb.TranslatorChannelTest do
 
       push(socket, "translate", %{"message" => "Привет"})
 
-      assert_broadcast(ref, %{message: "Hi"}, 500)
+      assert_broadcast(ref, %{eng_message: "Hi"}, 500)
     end
 
     test "Fail case", %{socket: socket} do
-
       long_message = :crypto.strong_rand_bytes(281) |> Base.encode16()
       ref = push(socket, "translate", %{"message" => long_message})
 

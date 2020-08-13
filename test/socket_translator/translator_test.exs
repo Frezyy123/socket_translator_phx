@@ -1,11 +1,16 @@
-defmodule SocketTranslatorPhx.TranslatorTest do
-  use ExUnit.Case
+defmodule SocketTranslatorPhx.YandexTranslatorTest do
+  use ExUnit.Case, async: false
 
-  alias SocketTranslatorPhx.Translator
+  alias SocketTranslatorPhx.YandexTranslator
+  alias SocketTranslatorPhx.Repo
 
   describe "Yandex translator integration" do
     setup do
+      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
+      Ecto.Adapters.SQL.Sandbox.mode(Repo, {:shared, self()})
+
       bypass = Bypass.open(port: 5000)
+
       {:ok, %{bypass: bypass}}
     end
 
@@ -16,7 +21,7 @@ defmodule SocketTranslatorPhx.TranslatorTest do
         Plug.Conn.resp(conn, 200, response)
       end)
 
-      assert "Hello" = Translator.translate_message("Привет", "some-token")
+      assert "Hello" = YandexTranslator.translate_message("Привет")
     end
 
     test "Fail case, should return {:error, reason}", %{bypass: bypass} do
@@ -25,7 +30,7 @@ defmodule SocketTranslatorPhx.TranslatorTest do
         Plug.Conn.resp(conn, 500, "")
       end)
 
-      assert {:error, reason} = Translator.translate_message("Привет", "some-token")
+      assert {:error, reason} = YandexTranslator.translate_message("Привет")
     end
   end
 end

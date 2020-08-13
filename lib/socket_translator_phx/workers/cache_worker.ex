@@ -1,4 +1,4 @@
-defmodule SocketTranslatorPhx.CacheWorker do
+defmodule SocketTranslatorPhx.Workers.CacheWorker do
   use GenServer
 
   defstruct [
@@ -6,8 +6,6 @@ defmodule SocketTranslatorPhx.CacheWorker do
   ]
 
   def start_link(args) do
-    # you may want to register your server with `name: __MODULE__`
-    # as a third argument to `start_link`
     GenServer.start_link(__MODULE__, [args], name: __MODULE__)
   end
 
@@ -35,7 +33,7 @@ defmodule SocketTranslatorPhx.CacheWorker do
     {:noreply, state}
   end
 
-  def handle_call({:get_from_cache, original_message}, _from,  %__MODULE__{ets_ref: ets_ref} = state) do
+  def handle_call({:get_from_cache, original_message}, _from, %__MODULE__{ets_ref: ets_ref} = state) do
     translated_message =
       case :ets.lookup(ets_ref, original_message) do
         [] -> nil
@@ -48,6 +46,10 @@ defmodule SocketTranslatorPhx.CacheWorker do
   @spec get_translated_message_from_cache(String.t()) :: String.t() | nil
   def get_translated_message_from_cache(original_message) do
     GenServer.call(__MODULE__, {:get_from_cache, original_message})
+  end
+
+  def put_message_to_cache(translated_message, original_message) do
+    send(__MODULE__, {:put_to_cache, original_message, translated_message})
   end
 
   @spec get_timestamp_of_expiration(non_neg_integer()) :: pos_integer()

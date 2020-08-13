@@ -15,9 +15,8 @@ defmodule SocketTranslatorPhx.Application do
       {Phoenix.PubSub, name: SocketTranslatorPhx.PubSub},
       # Start the Endpoint (http/https)
       SocketTranslatorPhxWeb.Endpoint,
-      SocketTranslatorPhx.CacheWorker
-      # Start a worker by calling: SocketTranslatorPhx.Worker.start_link(arg)
-      # {SocketTranslatorPhx.Worker, arg}
+      SocketTranslatorPhx.Workers.CacheWorker,
+      SocketTranslatorPhx.Workers.TokenWorker
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

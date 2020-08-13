@@ -1,6 +1,6 @@
 defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
   use Phoenix.Channel
-  alias SocketTranslatorPhx.Translator
+  alias SocketTranslatorPhx.YandexTranslator
 
   def join("translator", _message, socket) do
     {:ok, socket}
@@ -21,8 +21,8 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
 
   defp run_translate_task(socket) do
     Task.async(fn ->
-      translated_message = Translator.translate_message("message", "some-token")
-      broadcast!(socket, "translator", %{message: translated_message})
+      translated_message = YandexTranslator.translate_message("message")
+      broadcast!(socket, "translator", %{eng_message: translated_message})
     end)
   end
 
