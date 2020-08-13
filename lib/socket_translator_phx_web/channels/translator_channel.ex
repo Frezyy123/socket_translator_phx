@@ -28,13 +28,13 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
         case YandexTranslator.translate_message(message) do
           {:error, reason} ->
             Logger.error("Error occured due async task in translator channel, reason: #{inspect(reason)}")
-            broadcast!(socket, "translator", %{error: "Error! Please try again, later"})
+            broadcast!(socket, "translate", %{error: "Error! Please try again, later"})
 
           translated_message ->
             TranslationHistories.save_message_history(translated_message, message)
             CacheWorker.put_message_to_cache(translated_message, message)
 
-            broadcast!(socket, "translator", %{eng_message: translated_message})
+            broadcast!(socket, "translate", %{eng_message: translated_message})
         end
     end)
   end
