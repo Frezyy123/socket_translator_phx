@@ -15,7 +15,7 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
       run_translate_task(message, socket)
       {:noreply, socket}
     else
-      Logger.warn("Got long message (> 280 characters), message: #{inspect(message)}")
+      Logger.warn("Got long message > 280 characters, message: #{inspect(message)}")
       {:reply, {:ok, %{"error" => "Error! Too long message"}}, socket}
     end
   end

@@ -19,9 +19,10 @@ defmodule SocketTranslatorPhx.YandexTranslator do
 
     headers = [{"Content-Type", "application/json"}, {"Authorization", "Bearer #{token}"}]
 
+    folder_id = get_folder_id()
     body =
       %{
-        folder_id: "b1g75qo3ke15tavldsvv",
+        folder_id: folder_id,
         texts: message,
         targetLanguageCode: "en"
       }
@@ -64,4 +65,7 @@ defmodule SocketTranslatorPhx.YandexTranslator do
 
   @spec get_api_url() :: String.t()
   defp get_api_url(), do: Application.get_env(:socket_translator_phx, __MODULE__)[:api_url]
+
+  @spec get_folder_id() :: String.t()
+  defp get_folder_id(), do: Application.get_env(:socket_translator_phx, __MODULE__)[:folder_id]
 end
