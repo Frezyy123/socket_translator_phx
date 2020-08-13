@@ -20,13 +20,13 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
     end
   end
 
-  def handle_info({ref, {:ok, translated_message, message}}, socket) when is_binary(translated_message) do
+  def handle_info({_ref, {:ok, translated_message, message}}, socket) when is_binary(translated_message) do
     TranslationHistories.save_message_history(translated_message, message)
     CacheWorker.put_message_to_cache(translated_message, message)
     {:noreply, socket}
   end
 
-  def handle_info({ref, {:error, reason}}, socket) do
+  def handle_info({_ref, {:error, reason}}, socket) do
     Logger.error("Error occured due async task in translator channel, reason: #{inspect(reason)}")
     {:noreply, socket}
   end

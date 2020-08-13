@@ -1,7 +1,6 @@
 defmodule SocketTranslatorPhx.YandexTranslator do
   alias SocketTranslatorPhx.Workers.TokenWorker
   alias SocketTranslatorPhx.Workers.CacheWorker
-  alias SocketTranslatorPhx.TranslationHistories
 
   require Logger
 
