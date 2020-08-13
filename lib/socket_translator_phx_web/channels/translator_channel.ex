@@ -37,7 +37,7 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
   end
 
   def handle_info({:DOWN, _ref, :process, _pid, reason}, socket) do
-    Logger.error("Raise exeption occured due task, reason: #{inspect reason}")
+    Logger.error("Raise exeption occured due task, reason: #{inspect(reason)}")
     {:noreply, socket}
   end
 
@@ -53,6 +53,7 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
           broadcast!(socket, "translate", %{eng_message: translated_message})
           {:ok, translated_message, message}
       end
+
       raise "keke"
     end)
   end

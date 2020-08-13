@@ -21,8 +21,6 @@ config :socket_translator_phx, SocketTranslatorPhxWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
-config :socket_translator_phx, SocketTranslatorPhx.YandexTranslator,
-  api_url: "localhost:5000/translate/v2/translate"
+config :socket_translator_phx, SocketTranslatorPhx.YandexTranslator, api_url: "localhost:5000/translate/v2/translate"
 
-config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker,
-  time_to_live: 3
+config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker, time_to_live: 3
