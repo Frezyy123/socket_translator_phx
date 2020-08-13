@@ -1,0 +1,2 @@
+<%= text_input :input, :name, value: "Введите слово на английском", id: "message-input" %>
+<%= submit "Submit", id: "submit-button" %>
