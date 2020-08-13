@@ -1,18 +1,19 @@
 # SocketTranslatorPhx
 
-To start your Phoenix server:
+Проект переводчика с русского на английский.
 
-  * Setup the project with `mix setup`
-  * Start Phoenix endpoint with `mix phx.server`
+## Запуск
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Для запуска приложение необходимо установить утилиту yc от Яндекса для получения токена. Старый апи у них умер (подробнее https://translate.yandex.ru/developers/keys) и они переводят всех на Яндекс.Облако. Про установку yc и что такое Яндекс.Облако написано тут: https://cloud.yandex.ru/services/translate. Затем TokenWorker автоматически получит токен из System.cmd.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Замечания
 
-## Learn more
+* Для ленивого теста работоспособности существует ветка feature/debug-page. Там есть страница по адресу http://localhost:4000/ с полем которое переводит с русского на английский.
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+* Приложение написано на Phoenix для упрощения разработки и тестов.
+
+* Сообщения принимаются в топик "translator" с event "translate".
+
+* Тесты написаны с помощью bypass, чтобы не мучать Яндекс и не тратить средства на перевод во время тестов.
+
+* Если возникнут проблемы с токеном, можно связаться со мной для токена на 12ч.
