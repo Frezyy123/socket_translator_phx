@@ -8,13 +8,13 @@ defmodule SocketTranslatorPhx.Workers.TokenWorker do
   def init(_args) do
     # обновляем токен каждый час, в соответстии с докой
     :timer.send_interval(1000 * 60 * 60, :refresh_token)
-    token = create_new_token()
+    token = create_new_token!()
 
     {:ok, %{token: token}}
   end
 
   def handle_info(:refresh_token, state) do
-    token = create_new_token()
+    token = create_new_token!()
 
     {:noreply, %{state | token: token}}
   end
@@ -23,11 +23,13 @@ defmodule SocketTranslatorPhx.Workers.TokenWorker do
     {:reply, token, state}
   end
 
+  @spec get_token() :: String.t()
   def get_token() do
     GenServer.call(__MODULE__, :get_token)
   end
 
-  defp create_new_token() do
+  @spec create_new_token!() :: String.t()
+  defp create_new_token!() do
     {token, 0} = System.cmd("yc", ~w(iam create-token))
 
     token

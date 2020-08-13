@@ -9,10 +9,6 @@ defmodule SocketTranslatorPhx.Application do
     children = [
       # Start the Ecto repository
       SocketTranslatorPhx.Repo,
-      # Start the Telemetry supervisor
-      SocketTranslatorPhxWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: SocketTranslatorPhx.PubSub},
       # Start the Endpoint (http/https)
       SocketTranslatorPhxWeb.Endpoint,
       SocketTranslatorPhx.Workers.CacheWorker,

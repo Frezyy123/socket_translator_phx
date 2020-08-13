@@ -2,7 +2,8 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
   use GenServer
 
   defstruct [
-    :ets_ref
+    :ets_ref,
+    :time_to_live
   ]
 
   def start_link(args) do
@@ -13,8 +14,8 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
     :timer.send_interval(1000, :expire_cache)
 
     ets_ref = :ets.new(:translator_cache, [:set])
-
-    {:ok, %__MODULE__{ets_ref: ets_ref}}
+    time_to_live = get_time_to_live()
+    {:ok, %__MODULE__{ets_ref: ets_ref, time_to_live: time_to_live}}
   end
 
   def handle_info(:expire_cache, %__MODULE__{ets_ref: ets_ref} = state) do
@@ -24,10 +25,8 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
     {:noreply, state}
   end
 
-  def handle_info({:put_to_cache, original_message, translated_message}, %__MODULE__{ets_ref: ets_ref} = state) do
-    timestamp =
-      get_time_to_live()
-      |> get_timestamp_of_expiration()
+  def handle_info({:put_to_cache, original_message, translated_message}, %__MODULE__{ets_ref: ets_ref, time_to_live: time_to_live} = state) do
+    timestamp = get_timestamp_of_expiration(time_to_live)
 
     :ets.insert(ets_ref, {original_message, translated_message, timestamp})
     {:noreply, state}
@@ -36,8 +35,10 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
   def handle_call({:get_from_cache, original_message}, _from, %__MODULE__{ets_ref: ets_ref} = state) do
     translated_message =
       case :ets.lookup(ets_ref, original_message) do
-        [] -> nil
-        [{_original_message, translated_message, _timestamp}] -> translated_message
+        [] ->
+          nil
+        [{_original_message, translated_message, _timestamp}] ->
+           translated_message
       end
 
     {:reply, translated_message, state}
@@ -48,6 +49,7 @@ defmodule SocketTranslatorPhx.Workers.CacheWorker do
     GenServer.call(__MODULE__, {:get_from_cache, original_message})
   end
 
+  @spec put_message_to_cache(String.t(), String.t()) :: :ok
   def put_message_to_cache(translated_message, original_message) do
     send(__MODULE__, {:put_to_cache, original_message, translated_message})
   end

@@ -2,8 +2,12 @@ defmodule SocketTranslatorPhx.YandexTranslator do
   alias SocketTranslatorPhx.Workers.TokenWorker
   alias SocketTranslatorPhx.Workers.CacheWorker
   alias SocketTranslatorPhx.TranslationHistories
-  @spec translate_message(String.t()) :: {:ok, String.t()} | {:error, atom()}
+
+  require Logger
+
+  @spec translate_message(String.t()) :: String.t() | {:error, atom()}
   def translate_message(message) do
+    Logger.info("Translating #{message} to en")
 
     case CacheWorker.get_translated_message_from_cache(message) do
       nil -> post_request_to_yandex_translator(message)
@@ -28,12 +32,7 @@ defmodule SocketTranslatorPhx.YandexTranslator do
 
     case HTTPoison.post(api_url, body, headers) do
       {:ok, %HTTPoison.Response{status_code: 200} = response} ->
-        translated_message = parse_response(response)
-
-        CacheWorker.put_message_to_cache(translated_message, message)
-        TranslationHistories.save_message_history(translated_message, message)
-
-        translated_message
+        parse_response(response)
 
       {:ok, %HTTPoison.Response{status_code: 400} = response} ->
         parse_error(response)
@@ -52,10 +51,9 @@ defmodule SocketTranslatorPhx.YandexTranslator do
 
     %{"translations" => translations} = result
 
-    translated_message =
-      translations
-      |> Enum.reduce("", fn %{"text" => text}, acc -> acc <> text <> " " end)
-      |> String.trim()
+    translations
+    |> Enum.reduce("", fn %{"text" => text}, acc -> acc <> text <> " " end)
+    |> String.trim()
   end
 
   @spec parse_error(HTTPoison.Error.t() | HTTPoison.Response.t()) :: {:error, atom()}
