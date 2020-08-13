@@ -27,7 +27,6 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
   end
 
   def handle_info({ref, {:error, reason}}, socket) do
-    # TODO some error metrics, if you need
     Logger.error("Error occured due async task in translator channel, reason: #{inspect(reason)}")
     {:noreply, socket}
   end
@@ -53,8 +52,6 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
           broadcast!(socket, "translate", %{eng_message: translated_message})
           {:ok, translated_message, message}
       end
-
-      raise "keke"
     end)
   end
 end
