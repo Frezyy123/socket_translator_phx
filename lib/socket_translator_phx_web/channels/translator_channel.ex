@@ -47,10 +47,11 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
           {:error, reason}
 
         translated_message ->
+          broadcast!(socket, "translate", %{eng_message: translated_message})
+
           TranslationHistories.save_message_history(translated_message, message)
           CacheWorker.put_message_to_cache(translated_message, message)
 
-          broadcast!(socket, "translate", %{eng_message: translated_message})
           {:ok, translated_message, message}
       end
     end)
