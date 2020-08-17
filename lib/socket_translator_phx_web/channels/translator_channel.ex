@@ -20,9 +20,7 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
     end
   end
 
-  def handle_info({_ref, {:ok, translated_message, message}}, socket) when is_binary(translated_message) do
-    TranslationHistories.save_message_history(translated_message, message)
-    CacheWorker.put_message_to_cache(translated_message, message)
+  def handle_info({_ref, {:ok, _translated_message, _message}}, socket) do
     {:noreply, socket}
   end
 
@@ -49,6 +47,9 @@ defmodule SocketTranslatorPhxWeb.Channels.TranslatorChannel do
           {:error, reason}
 
         translated_message ->
+          TranslationHistories.save_message_history(translated_message, message)
+          CacheWorker.put_message_to_cache(translated_message, message)
+
           broadcast!(socket, "translate", %{eng_message: translated_message})
           {:ok, translated_message, message}
       end
