@@ -11,11 +11,19 @@ defmodule SocketTranslatorPhx.CacheTest do
       CacheWorker.put_message_to_cache("Message_for_cache", "Сообщенька для кеша")
 
       assert "Message_for_cache" == CacheWorker.get_translated_message_from_cache("Сообщенька для кеша")
-      :timer.sleep(1500)
-      assert nil == CacheWorker.get_translated_message_from_cache("Сообщенька для кеша")
-
       assert nil == CacheWorker.get_translated_message_from_cache("Сообщенька мимо проходила")
+      :timer.sleep(3100)
+      assert nil == CacheWorker.get_translated_message_from_cache("Сообщенька для кеша")
+    end
 
+    test "Wait 2 seconds, check cache, then wait 1 second. Message should be empty." do
+      CacheWorker.put_message_to_cache("Message_for_cache", "Сообщенька для кеша")
+      :timer.sleep(2100)
+
+      assert "Message_for_cache" == CacheWorker.get_translated_message_from_cache("Сообщенька для кеша")
+
+      :timer.sleep(1100)
+      assert nil == CacheWorker.get_translated_message_from_cache("Сообщенька для кеша")
     end
   end
 end

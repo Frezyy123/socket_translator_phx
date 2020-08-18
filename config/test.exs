@@ -25,4 +25,4 @@ config :socket_translator_phx, SocketTranslatorPhx.YandexTranslator,
   api_url: "localhost:5000/translate/v2/translate",
   folder_id: "b1g75qo3ke15tavldsvv"
 
-config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker, time_to_live: 1
+config :socket_translator_phx, SocketTranslatorPhx.Workers.CacheWorker, time_to_live: 3
